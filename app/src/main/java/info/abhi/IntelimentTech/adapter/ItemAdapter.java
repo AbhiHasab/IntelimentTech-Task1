@@ -63,7 +63,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvSpecies = (TextView) itemView.findViewById(R.id.tv_species);
+            tvSpecies = itemView.findViewById(R.id.tv_species);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

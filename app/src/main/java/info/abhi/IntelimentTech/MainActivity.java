@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button greenBtn;
     private TextView position;
     private String qty;
+    View view;
+    private long back_pressed = 0;
     private int layoutId = R.layout.activity_main;
 
     @Override
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alName = new ArrayList<>(Arrays.asList("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"));
 
         // Calling the RecyclerView
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         // The number of Columns
@@ -68,19 +71,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setAdapter(mAdapter);
 
         // ImageSlider
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        indicator = (CircleIndicator) findViewById(R.id.indicator);
+        viewPager = findViewById(R.id.pager);
+        indicator = findViewById(R.id.indicator);
 
-        redBtn = (Button) findViewById(R.id.redBtn);
-        blueBtn = (Button) findViewById(R.id.blueBtn);
-        greenBtn = (Button) findViewById(R.id.greenBtn);
-        position = (TextView) findViewById(R.id.position);
+        redBtn = findViewById(R.id.redBtn);
+        blueBtn = findViewById(R.id.blueBtn);
+        greenBtn = findViewById(R.id.greenBtn);
+        position = findViewById(R.id.position);
 
         redBtn.setOnClickListener(this);
         blueBtn.setOnClickListener(this);
         greenBtn.setOnClickListener(this);
 
-        colorBackground = (LinearLayout) findViewById(R.id.colorBackground);
+        colorBackground = findViewById(R.id.colorBackground);
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("custom-message"));
 
@@ -146,8 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("qty",qty);
-        outState.putInt("layoutId", layoutId);
+        outState.putString("qty",position.getText().toString());
         super.onSaveInstanceState(outState);
     }
 
@@ -156,5 +158,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String qty = savedInstanceState.getString("qty");
         position.setText(qty);
         super.onRestoreInstanceState(savedInstanceState);
+    }
+    @Override
+    public void onBackPressed() {
+
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+            finish();
+        } else if (back_pressed + 2000 > System.currentTimeMillis())
+            super.onBackPressed();
+        else {
+            Snackbar snackbar = Snackbar.make(view, "Please click BACK again to exit", Snackbar.LENGTH_SHORT);
+            View view = snackbar.getView();
+            view.setBackgroundColor(getResources().getColor(R.color.black));
+            TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setTextColor(Color.WHITE);
+            snackbar.show();
+            back_pressed = System.currentTimeMillis();
+        }
     }
 }
